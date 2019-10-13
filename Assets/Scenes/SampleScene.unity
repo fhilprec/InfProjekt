@@ -273,6 +273,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1457064741}
   - component: {fileID: 1457064740}
+  - component: {fileID: 1457064742}
   m_Layer: 0
   m_Name: Gamemanager
   m_TagString: Untagged
@@ -292,7 +293,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ac0a460e464d5b45a91f8cebfec0706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 10, y: 10, z: 10}
+  threshhold: 1
+  frequenzy: 0.308
+  mat: {fileID: 2100000, guid: d81ce1ddf52e10c4ea661cabeefa5b4f, type: 2}
+  cubespeed: 0
 --- !u!4 &1457064741
 Transform:
   m_ObjectHideFlags: 0
@@ -307,3 +311,16 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1457064742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1457064739}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2843ffc348cd16747aa628340cf36aa0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  test: {fileID: 2100000, guid: d81ce1ddf52e10c4ea661cabeefa5b4f, type: 2}
