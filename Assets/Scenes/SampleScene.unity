@@ -293,10 +293,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ac0a460e464d5b45a91f8cebfec0706, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  threshhold: 1
-  frequenzy: 0.308
+  threshhold: 0.6
+  frequenzy: 0.162
   mat: {fileID: 2100000, guid: d81ce1ddf52e10c4ea661cabeefa5b4f, type: 2}
-  cubespeed: 0
+  cubespeed: 5
 --- !u!4 &1457064741
 Transform:
   m_ObjectHideFlags: 0
@@ -323,4 +323,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2843ffc348cd16747aa628340cf36aa0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  test: {fileID: 2100000, guid: d81ce1ddf52e10c4ea661cabeefa5b4f, type: 2}

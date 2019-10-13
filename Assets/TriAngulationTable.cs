@@ -261,5 +261,19 @@ public class TriAngulationTable
 {0, 9, 1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 {0, 3, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
 {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1}};
-    
+
+
+
+    public Vector3[,] edgetable = { { new Vector3(0,0,0),new Vector3(1,0,0)},
+        { new Vector3(1,0,0),new Vector3(1,0,1)},
+        { new Vector3(1,0,1),new Vector3(0,0,1)},
+        { new Vector3(0,0,1),new Vector3(0,0,0)},
+        { new Vector3(0,1,0),new Vector3(1,1,0)},
+        { new Vector3(1,1,0),new Vector3(1,1,1)},
+        { new Vector3(1,1,1),new Vector3(0,1,1)},
+        { new Vector3(0,1,1),new Vector3(0,1,0)},
+        { new Vector3(0,0,0),new Vector3(0,1,0)},
+        { new Vector3(1,0,0),new Vector3(1,1,0)},
+        { new Vector3(1,0,1),new Vector3(1,1,1)},
+        { new Vector3(0,0,1),new Vector3(0,1,1)} };
 }

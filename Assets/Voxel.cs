@@ -11,10 +11,10 @@ public class Voxel : MonoBehaviour
     TriAngulationTable tri = new TriAngulationTable();
     [Range(0.1f,1)]
     public float frequenzy;
-    float[,,] noisevalues = new float[chuncksize, chuncksize, chuncksize];
+    int[,,] noisevalues = new int[chuncksize, chuncksize, chuncksize];
     Mesh mesh;
     GameObject cube;
-    float time = 1;
+    float time = 1000;
     public Material mat;
     private Vector3[] vertices;
     private int[] triangles;
@@ -27,6 +27,7 @@ public class Voxel : MonoBehaviour
 
     public float cubespeed = 1;
 
+    
 
     private void triangulate()
     {
@@ -35,9 +36,57 @@ public class Voxel : MonoBehaviour
         List<Vector3> vertices = new List<Vector3>();
         List<int> triangles = new List<int>();
 
+        //check all the points within the cube
+        string binary = "";
+        binary += noisevalues[x+1, y, z+1].ToString();
+        binary += noisevalues[x, y, z+1].ToString();;
+        binary += noisevalues[x, y, z].ToString();
+        binary += noisevalues[x + 1, y, z].ToString();     
+        binary += noisevalues[x + 1, y+1, z + 1].ToString();
+        binary += noisevalues[x, y+1, z + 1].ToString();
+        binary += noisevalues[x, y + 1, z].ToString();
+        binary += noisevalues[x + 1, y+1, z].ToString();
 
-        Vector3[] verticesarray = new Vector3[3];
-        int[] trianglesarray = new int[3];
+        int verticescount = 0;
+        for (int i = 0; i < 16; i++)            //somewhere is the problem
+        {
+            int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
+            if (index != -1){
+                vertices.Add((tri.edgetable[index, 0] + tri.edgetable[index, 1]) / 2 + new Vector3(x,y,z));
+                verticescount++;
+                
+                
+            }
+
+            
+        }
+        for (int i = 0; i < vertices.Count; i++)
+        {
+            GameObject debug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            debug.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+            debug.transform.position = vertices[i];
+            debug.GetComponent<MeshRenderer>().material.color = new Color(100, 0, 0);
+
+        }
+
+
+
+
+
+        for (int i = 0; i < verticescount; i++)
+        {
+            Debug.Log(vertices.Count - 1 - verticescount + i);
+            triangles.Add(vertices.Count - 1 - verticescount + i);
+        }
+
+
+
+
+        Vector3[] verticesarray = new Vector3[vertices.Count];
+        int[] trianglesarray = new int[triangles.Count];
+
+        verticesarray = vertices.ToArray();
+        trianglesarray = triangles.ToArray();
 
 
         mesh.vertices = verticesarray;
@@ -66,13 +115,17 @@ public class Voxel : MonoBehaviour
                 for (int z = 0; z < chuncksize; z++)
                 {
                     float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy)+1)/2;
-                    noisevalues[x, y, z] = noisevalue;
-                    Debug.Log(noisevalue);
+                    
+                    
                     if (noisevalue > threshhold)
                     {
+                        noisevalues[x, y, z] = 1;
                         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                         sphere.transform.position = new Vector3(x, y, z);
+                    }
+                    else {
+                        noisevalues[x, y, z] = 0;
                     }
 
                 }
