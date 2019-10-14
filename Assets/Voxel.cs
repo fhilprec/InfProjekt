@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Voxel : MonoBehaviour
 {
-    const int chuncksize = 10;
+    const int chuncksize = 20;
     Noise noise = new Noise();
     [Range(0,1)]
     public float threshhold;
+    public Vector3 offset;
     TriAngulationTable tri = new TriAngulationTable();
     [Range(0.1f,1)]
     public float frequenzy;
@@ -20,8 +21,10 @@ public class Voxel : MonoBehaviour
     private int[] triangles;
     private bool done;
 
-    List<Vector3> verticeslist = new List<Vector3>();
-    List<int> triangleslist = new List<int>();
+    List<Vector3> verticeslist = new List<Vector3>();               //only for debugging make class list after finising
+    List<int> triangleslist = new List<int>();              //same here
+
+
 
     int x = 0;
     int y = 0;
@@ -35,6 +38,8 @@ public class Voxel : MonoBehaviour
 
     private void triangulate()
     {
+        
+
         Mesh mesh = new Mesh();
 
         
@@ -53,13 +58,14 @@ public class Voxel : MonoBehaviour
        // Debug.Log("Binary is equal to " + binary);
 
         int verticescount = 0;
+        Debug.ClearDeveloperConsole();
         for (int i = 0; i < 16; i++)            //Should be working
         {
             int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
             if (index != -1){
-                verticeslist.Add((tri.edgetable[index, 0] + tri.edgetable[index, 1]) / 2 + new Vector3(x,y,z));
+                verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  );
                 verticescount++;
-                //Debug.Log(index);
+                Debug.Log(index);
                 
             }
 
@@ -71,6 +77,7 @@ public class Voxel : MonoBehaviour
             debug.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             debug.transform.position = verticeslist[i];
             debug.GetComponent<MeshRenderer>().material.color = new Color(100, 0, 0);
+            debug.transform.SetParent(gameObject.transform);
 
         }*/
 
@@ -105,7 +112,7 @@ public class Voxel : MonoBehaviour
 
     private void Start()
     {
-        
+
         gameObject.AddComponent<MeshFilter>();
         gameObject.AddComponent<MeshRenderer>();
         gameObject.GetComponent<MeshRenderer>().sharedMaterial = mat;
@@ -113,15 +120,15 @@ public class Voxel : MonoBehaviour
 
 
         //filling the 3d array with the noisevalues
-        for (int x = 0; x  < chuncksize; x++)
+        for (int x = 1; x < chuncksize-1; x++)          //trying to fill the gaps thats why the magic numbers
         {
-            for (int y = 0; y < chuncksize; y++)
+            for (int y = 1; y < chuncksize-1; y++)
             {
-                for (int z = 0; z < chuncksize; z++)
+                for (int z = 1; z < chuncksize-1; z++)
                 {
-                    float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy)+1)/2;
-                    
-                    
+                    float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy + offset) + 1) / 2;
+
+
                     if (noisevalue > threshhold)
                     {
                         noisevalues[x, y, z] = 1;
@@ -129,7 +136,8 @@ public class Voxel : MonoBehaviour
                         sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
                         sphere.transform.position = new Vector3(x, y, z);
                     }
-                    else {
+                    else
+                    {
                         noisevalues[x, y, z] = 0;
                     }
 
@@ -137,7 +145,34 @@ public class Voxel : MonoBehaviour
 
             }
         }
+        /*int temporary = 0;
+        noisevalues[1 + temporary, 1 + temporary, 1 + temporary] = 1;
+        noisevalues[2 + temporary, 1 + temporary, 1 + temporary] = 1;
+        noisevalues[1 + temporary, 1 + temporary, 2 + temporary] = 1;
+        noisevalues[2 + temporary, 1 + temporary, 2 + temporary] = 1;
+        noisevalues[1 + temporary, 2 + temporary, 1 + temporary] = 1;
+        noisevalues[1 + temporary, 2 + temporary, 2 + temporary] = 1;
+        noisevalues[2 + temporary, 2 + temporary, 1 + temporary] = 1;
+        noisevalues[2 + temporary, 2 + temporary, 2 + temporary] = 1;       
 
+
+        //testloop
+        for (int i = 0; i < chuncksize; i++)
+        {
+            for (int j = 0; j < chuncksize; j++)
+            {
+                for (int k = 0; k < chuncksize; k++)
+                {
+                    if (noisevalues[i,j,k] == 1)
+                    {
+                        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
+                        sphere.transform.position = new Vector3(i,j,k);
+                    }
+                }
+            }
+        }*/
+        
 
         //move the cube
 
@@ -148,8 +183,8 @@ public class Voxel : MonoBehaviour
 
 
         //check whether  all the points of the cube are in the according surface
-        cube.transform.position = new Vector3(0.5f,0.5f, 0.5f);
-        
+        cube.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
+
 
     }
 
