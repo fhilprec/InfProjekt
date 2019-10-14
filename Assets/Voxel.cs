@@ -18,6 +18,10 @@ public class Voxel : MonoBehaviour
     public Material mat;
     private Vector3[] vertices;
     private int[] triangles;
+    private bool done;
+
+    List<Vector3> verticeslist = new List<Vector3>();
+    List<int> triangleslist = new List<int>();
 
     int x = 0;
     int y = 0;
@@ -25,7 +29,7 @@ public class Voxel : MonoBehaviour
 
     float test = 0;
 
-    public float cubespeed = 1;
+    public float cubespeed = 0;
 
     
 
@@ -33,8 +37,7 @@ public class Voxel : MonoBehaviour
     {
         Mesh mesh = new Mesh();
 
-        List<Vector3> vertices = new List<Vector3>();
-        List<int> triangles = new List<int>();
+        
 
         //check all the points within the cube
         string binary = "";
@@ -47,27 +50,29 @@ public class Voxel : MonoBehaviour
         binary += noisevalues[x, y + 1, z].ToString();
         binary += noisevalues[x + 1, y+1, z].ToString();
 
+       // Debug.Log("Binary is equal to " + binary);
+
         int verticescount = 0;
-        for (int i = 0; i < 16; i++)            //somewhere is the problem
+        for (int i = 0; i < 16; i++)            //Should be working
         {
             int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
             if (index != -1){
-                vertices.Add((tri.edgetable[index, 0] + tri.edgetable[index, 1]) / 2 + new Vector3(x,y,z));
+                verticeslist.Add((tri.edgetable[index, 0] + tri.edgetable[index, 1]) / 2 + new Vector3(x,y,z));
                 verticescount++;
-                
+                //Debug.Log(index);
                 
             }
 
             
         }
-        for (int i = 0; i < vertices.Count; i++)
+        /*for (int i = 0; i < verticeslist.Count; i++)                //spawn spheres for debugging
         {
             GameObject debug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             debug.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-            debug.transform.position = vertices[i];
+            debug.transform.position = verticeslist[i];
             debug.GetComponent<MeshRenderer>().material.color = new Color(100, 0, 0);
 
-        }
+        }*/
 
 
 
@@ -75,18 +80,18 @@ public class Voxel : MonoBehaviour
 
         for (int i = 0; i < verticescount; i++)
         {
-            Debug.Log(vertices.Count - 1 - verticescount + i);
-            triangles.Add(vertices.Count - 1 - verticescount + i);
+            Debug.Log(verticeslist.Count - verticescount + i);
+            triangleslist.Add(verticeslist.Count - verticescount + i);
         }
 
 
 
 
-        Vector3[] verticesarray = new Vector3[vertices.Count];
-        int[] trianglesarray = new int[triangles.Count];
+        Vector3[] verticesarray = new Vector3[verticeslist.Count];
+        int[] trianglesarray = new int[triangleslist.Count];
 
-        verticesarray = vertices.ToArray();
-        trianglesarray = triangles.ToArray();
+        verticesarray = verticeslist.ToArray();
+        trianglesarray = triangleslist.ToArray();
 
 
         mesh.vertices = verticesarray;
@@ -148,27 +153,35 @@ public class Voxel : MonoBehaviour
 
     }
 
-    private void Update()
+    private void animate()
     {
-
-        test += 0.01f;
-        Mesh mesh = new Mesh();
-        time += Time.deltaTime;
-        while (time > cubespeed)
+        if (done == false)
         {
+            test += 0.01f;
+            Mesh mesh = new Mesh();
+            time += Time.deltaTime;
+            while (time > cubespeed)
+            {
                 if (x > chuncksize - 2) { x = 0; y++; }
                 if (y > chuncksize - 2) { x = 0; y = 0; z++; }
-                if (z > chuncksize - 2) { x = 0; y = 0; z = 0; }
+                if (z > chuncksize - 2) { x = 0; y = 0; done = true; }
 
-            cube.transform.position = new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f);
-            triangulate();
+                cube.transform.position = new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f);
+                triangulate();
 
 
 
-            x++;
+                x++;
                 time = 0;
             }
         }
     }
+
+    private void Update()
+    {
+        animate();
+    }
+
+}
 
 

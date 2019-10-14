@@ -264,16 +264,16 @@ public class TriAngulationTable
 
 
 
-    public Vector3[,] edgetable = { { new Vector3(0,0,0),new Vector3(1,0,0)},
-        { new Vector3(1,0,0),new Vector3(1,0,1)},
-        { new Vector3(1,0,1),new Vector3(0,0,1)},
-        { new Vector3(0,0,1),new Vector3(0,0,0)},
-        { new Vector3(0,1,0),new Vector3(1,1,0)},
-        { new Vector3(1,1,0),new Vector3(1,1,1)},
-        { new Vector3(1,1,1),new Vector3(0,1,1)},
-        { new Vector3(0,1,1),new Vector3(0,1,0)},
-        { new Vector3(0,0,0),new Vector3(0,1,0)},
-        { new Vector3(1,0,0),new Vector3(1,1,0)},
-        { new Vector3(1,0,1),new Vector3(1,1,1)},
-        { new Vector3(0,0,1),new Vector3(0,1,1)} };
+    public Vector3[,] edgetable = { { new Vector3(0,1,0),new Vector3(1,1,0)}, //c
+        { new Vector3(0,0,0),new Vector3(0,0,1)}, //c
+        { new Vector3(0,1,1),new Vector3(1,1,1)},//c
+        { new Vector3(1,1,1),new Vector3(1,1,0)},//c
+        { new Vector3(1,0,0),new Vector3(0,0,0)}, //changed
+        { new Vector3(0,0,0),new Vector3(0,0,1)},//c
+        { new Vector3(1,0,1),new Vector3(0,0,1)}, //changed
+        { new Vector3(1,0,1),new Vector3(1,0,0)},//c
+        { new Vector3(1,0,0),new Vector3(1,1,0)},//c
+        { new Vector3(0,1,0),new Vector3(0,0,0)},   //changed
+        { new Vector3(0,1,1),new Vector3(0,0,1)}, //changed
+        { new Vector3(1,1,1),new Vector3(1,0,1)} };
 }
