@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Voxel : MonoBehaviour
 {
-    const int chuncksize = 20;
+    const int chuncksize = 10;
     Noise noise = new Noise();
     [Range(0,1)]
     public float threshhold = 0.808f;
@@ -35,7 +35,14 @@ public class Voxel : MonoBehaviour
     public float cubespeed = 0;
 
     
+    private float density(Vector3 point)
+    {
+        float v = 0;
 
+        v = (noise.Evaluate(point * frequenzy + offset + gameObject.transform.position) + 1) / 2;
+
+        return v;
+    }
     private void triangulate()
     {
         
@@ -63,18 +70,48 @@ public class Voxel : MonoBehaviour
         {
             int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
             if (index != -1){
-                verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  +gameObject.transform.position); //adding gameobjects position for worldspace
-                
+                Vector3 point1 = tri.edgetable[index, 0];
+                Vector3 point2 = tri.edgetable[index, 1];
+                //verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  +gameObject.transform.position); //adding gameobjects position for worldspace
 
+
+
+
+
+                /*float v1 = density(point1);
+                float v2 = density(point2);
+                Vector3 newp;
+                if (v1 < v2)
+                {
+                    newp = (point1 + point2) / 2 * v2 / v1;
+                }
+                else
+                {
+                    newp = (point1 + point2) / 2 * v1 / v2;
+                }
+                if(v1 == v2)
+                {*/
+                    Vector3 newp = (point1 + point2) / 2;
+                //}
+
+
+
+                newp += new Vector3(x, y, z) + gameObject.transform.position;
+                verticeslist.Add(newp);
+
+                Debug.Log(density(point1));
+
+
+                Debug.Log(density(point2));
 
                 verticescount++;
-                Debug.Log(index);
+                //Debug.Log(index);
                 
             }
 
             
         }
-        /*for (int i = 0; i < verticeslist.Count; i++)                //spawn spheres for debugging
+        for (int i = 0; i < verticeslist.Count; i++)                //spawn spheres for debugging
         {
             GameObject debug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             debug.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
@@ -82,7 +119,7 @@ public class Voxel : MonoBehaviour
             debug.GetComponent<MeshRenderer>().material.color = new Color(100, 0, 0);
             debug.transform.SetParent(gameObject.transform);
 
-        }*/
+        }
 
 
 
@@ -90,7 +127,7 @@ public class Voxel : MonoBehaviour
 
         for (int i = 0; i < verticescount; i++)
         {
-            Debug.Log(verticeslist.Count - verticescount + i);
+            //Debug.Log(verticeslist.Count - verticescount + i);
             triangleslist.Add(verticeslist.Count - verticescount + i);
         }
 
@@ -129,7 +166,7 @@ public class Voxel : MonoBehaviour
             {
                 for (int z = 1; z < chuncksize-1; z++)
                 {
-                    float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy + offset + gameObject.transform.position) + 1) / 2;             //use worldpspace
+                    float noisevalue = (density(new Vector3(x,y,z)));             //use worldpspace
 
 
                     if (noisevalue > threshhold)
@@ -190,6 +227,20 @@ public class Voxel : MonoBehaviour
         cube.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
 
 
+    }
+
+    private void march()
+    {
+        for (int x = 0; x < chuncksize-1; x++)
+        {
+            for (int y = 0; y < chuncksize-1; y++)
+            {
+                for (int z = 0; z < chuncksize-1; z++)
+                {
+
+                }
+            }
+        }
     }
 
     private void animate()
