@@ -7,11 +7,11 @@ public class Voxel : MonoBehaviour
     const int chuncksize = 20;
     Noise noise = new Noise();
     [Range(0,1)]
-    public float threshhold;
-    public Vector3 offset;
+    public float threshhold = 0.808f;
+    public Vector3 offset = new Vector3(0,0,5);
     TriAngulationTable tri = new TriAngulationTable();
     [Range(0.1f,1)]
-    public float frequenzy;
+    public float frequenzy = 0.118f;
     int[,,] noisevalues = new int[chuncksize, chuncksize, chuncksize];
     Mesh mesh;
     GameObject cube;
@@ -63,7 +63,10 @@ public class Voxel : MonoBehaviour
         {
             int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
             if (index != -1){
-                verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  );
+                verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  +gameObject.transform.position); //adding gameobjects position for worldspace
+                
+
+
                 verticescount++;
                 Debug.Log(index);
                 
@@ -103,7 +106,7 @@ public class Voxel : MonoBehaviour
 
         mesh.vertices = verticesarray;
         mesh.triangles = trianglesarray;
-
+        mesh.RecalculateNormals();
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
 
 
@@ -126,7 +129,7 @@ public class Voxel : MonoBehaviour
             {
                 for (int z = 1; z < chuncksize-1; z++)
                 {
-                    float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy + offset) + 1) / 2;
+                    float noisevalue = (noise.Evaluate(new Vector3(x, y, z) * frequenzy + offset + gameObject.transform.position) + 1) / 2;             //use worldpspace
 
 
                     if (noisevalue > threshhold)
@@ -134,7 +137,8 @@ public class Voxel : MonoBehaviour
                         noisevalues[x, y, z] = 1;
                         GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         sphere.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
-                        sphere.transform.position = new Vector3(x, y, z);
+                        sphere.transform.position = new Vector3(x, y, z) + gameObject.transform.position;
+                        sphere.transform.SetParent(gameObject.transform);
                     }
                     else
                     {
@@ -201,7 +205,7 @@ public class Voxel : MonoBehaviour
                 if (y > chuncksize - 2) { x = 0; y = 0; z++; }
                 if (z > chuncksize - 2) { x = 0; y = 0; done = true; }
 
-                cube.transform.position = new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f);
+                cube.transform.position = new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f) + gameObject.transform.position;
                 triangulate();
 
 
