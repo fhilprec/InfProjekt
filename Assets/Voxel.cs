@@ -74,35 +74,16 @@ public class Voxel : MonoBehaviour
                 Vector3 point2 = tri.edgetable[index, 1];
                 //verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  +gameObject.transform.position); //adding gameobjects position for worldspace
 
-
-
-
-
-                /*float v1 = density(point1);
-                float v2 = density(point2);
-                Vector3 newp;
-                if (v1 < v2)
-                {
-                    newp = (point1 + point2) / 2 * v2 / v1;
-                }
-                else
-                {
-                    newp = (point1 + point2) / 2 * v1 / v2;
-                }
-                if(v1 == v2)
-                {*/
-                    Vector3 newp = (point1 + point2) / 2;
-                //}
+                
+                Vector3 newp = (point1 + point2) / 2;
+                
 
 
 
                 newp += new Vector3(x, y, z) + gameObject.transform.position;
                 verticeslist.Add(newp);
 
-                Debug.Log(density(point1));
-
-
-                Debug.Log(density(point2));
+                
 
                 verticescount++;
                 //Debug.Log(index);
@@ -113,11 +94,11 @@ public class Voxel : MonoBehaviour
         }
         for (int i = 0; i < verticeslist.Count; i++)                //spawn spheres for debugging
         {
-            GameObject debug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            /*GameObject debug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             debug.transform.localScale = new Vector3(0.1f, 0.1f, 0.1f);
             debug.transform.position = verticeslist[i];
             debug.GetComponent<MeshRenderer>().material.color = new Color(100, 0, 0);
-            debug.transform.SetParent(gameObject.transform);
+            debug.transform.SetParent(gameObject.transform);*/
 
         }
 
@@ -227,6 +208,7 @@ public class Voxel : MonoBehaviour
         cube.transform.position = new Vector3(0.5f, 0.5f, 0.5f);
 
 
+        //march();
     }
 
     private void march()
@@ -237,7 +219,8 @@ public class Voxel : MonoBehaviour
             {
                 for (int z = 0; z < chuncksize-1; z++)
                 {
-
+                    cube.transform.position = new Vector3(x, y, z) + new Vector3(0.5f, 0.5f, 0.5f) + gameObject.transform.position;
+                    animate();
                 }
             }
         }
@@ -269,7 +252,7 @@ public class Voxel : MonoBehaviour
 
     private void Update()
     {
-        animate();
+       animate();
     }
 
 }
