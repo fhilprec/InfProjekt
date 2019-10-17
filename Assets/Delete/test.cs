@@ -19,8 +19,14 @@ public class test : MonoBehaviour
         Vector3 point1 = new Vector3(0, 0, 0);
         Vector3 point2 = new Vector3(1, 0, 0);
 
-        float fak = (0 - v1) / (v2 - v1); ;
-        Vector3 result = (point1+point2)/2 + (point2-point1) * (0.5f-v1) + (point2 - point1) * (0.5f - v2);
+
+        
+
+        float res = v1 / (v1 - v2);
+        Vector3 result = (point1 - point2) * res;
+
+
+
 
         sphere1.transform.position = point1;
         sphere2.transform.position = point2;

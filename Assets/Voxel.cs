@@ -74,11 +74,15 @@ public class Voxel : MonoBehaviour
                 Vector3 point2 = tri.edgetable[index, 1];
                 //verticeslist.Add((tri.edgetable[index, 0] + new Vector3(x, y, z) + tri.edgetable[index, 1] + new Vector3(x, y, z)) / 2  +gameObject.transform.position); //adding gameobjects position for worldspace
 
+                float v1 = density(point1 + new Vector3(x,y,z) + gameObject.transform.position);
+                float v2 = density(point2 + new Vector3(x,y,z) + gameObject.transform.position);
+                Debug.Log(v1);
+                Debug.Log(v2);
                 
                 Vector3 newp = (point1 + point2) / 2;
+
+
                 
-
-
 
                 newp += new Vector3(x, y, z) + gameObject.transform.position;
                 verticeslist.Add(newp);
