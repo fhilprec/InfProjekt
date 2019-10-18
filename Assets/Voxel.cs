@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class Voxel : MonoBehaviour
 {
-    const int chunkresolution = 40;
+    const int chunkresolution = 100;
     public int chunksize = 10;
     Noise noise = new Noise();
     [Range(0,1)]
-    public float threshhold = 0.7f;
+    public float threshhold = 0.6f;
     public Vector3 offset = new Vector3(0,0,5);
     TriAngulationTable tri = new TriAngulationTable();
     [Range(0.1f,1)]
-    const float frequenzy = 0.08f;
+    const float frequenzy = 0.2f;
     int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
     public Material mat;
 
@@ -87,11 +87,15 @@ public class Voxel : MonoBehaviour
 
     }
 
-    private void Start()
+    private void OnValidate()
     {
+        triangleslist.Clear();
+        verticeslist.Clear();
 
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
+
+        if(gameObject.GetComponent<MeshFilter>() == null) { gameObject.AddComponent<MeshFilter>(); }
+        if (gameObject.GetComponent<MeshRenderer>() == null) { gameObject.AddComponent<MeshRenderer>(); }
+        
         gameObject.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
 
@@ -135,7 +139,8 @@ public class Voxel : MonoBehaviour
             }
         }
         Mesh mesh = new Mesh();
-        
+        mesh.Clear();
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         Vector3[] verticesarray = new Vector3[verticeslist.Count];
         int[] trianglesarray = new int[triangleslist.Count];
 
