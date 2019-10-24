@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NoiseTerrain : MonoBehaviour
 {
-    [Range(5, 100)]
+    [Range(1, 100)]
     public int chunkresolution = 30;
     private bool useParent = true;
 
@@ -15,7 +15,7 @@ public class NoiseTerrain : MonoBehaviour
     public float threshhold = 0.6f;
     public Vector3 offset = new Vector3(0, 0, 5);
     TriAngulationTable tri = new TriAngulationTable();
-    [Range(0.1f, 10)]
+    [Range(0.01f, 0.5f)]
     public float frequenzy = 2f;
     public float terrainfrequenzy = 1f;
     public float amplitude = 1f;
@@ -37,7 +37,7 @@ public class NoiseTerrain : MonoBehaviour
     {
         float v = 0;
 
-        v = (noise.Evaluate(point * frequenzy + offset) ) / 2;
+        v = (noise.Evaluate(point * frequenzy + offset)) / 2;
 
         return v;
     }
@@ -57,7 +57,7 @@ public class NoiseTerrain : MonoBehaviour
             tempfrequenzy *= 2.05f;
             tempamplitude *= 0.5f;
         }
-       
+
         return v;
 
 
@@ -92,18 +92,18 @@ public class NoiseTerrain : MonoBehaviour
                 //creates smooth terrain
                 // magic number at the end creates best results -> higher number smoother terrain
 
-                float v1 = density((point1 + new Vector3(x, y, z))/(chunkresolution-1) + gameObject.transform.position) *50  ;
-                float v2 = density((point2 + new Vector3(x, y, z))/(chunkresolution-1) + gameObject.transform.position)  *50;
-                Vector3 newp = ((point1 + point2) / 2) + (point2 - point1) * v1 + (point1 - point2) * v2;
+                float v1 = density((point1 + new Vector3(x, y, z)) / (chunkresolution - 1) + gameObject.transform.position) * 1;
+                float v2 = density((point2 + new Vector3(x, y, z)) / (chunkresolution - 1) + gameObject.transform.position) * 1;
+                Vector3 newp = (point1 + point2) / 2 + (point2 - point1) * v1 + (point1 - point2) * v2;
 
                 //creates blocky terrain
-                //Vector3 newp = ((point1 + point2) / 2);
+                //newp = ((point1 + point2) / 2);
 
 
 
                 newp += new Vector3(x, y, z);
-                newp /= chunkresolution - 1;      //-3 instead of -2 to avoid most cracks should be fixed later
-                 
+                newp /= chunkresolution -3;      //-3 instead of -2 to avoid most cracks should be fixed later
+
 
                 verticeslist.Add(newp);
                 verticescount++;
@@ -126,16 +126,17 @@ public class NoiseTerrain : MonoBehaviour
 
     }
 
-    private void generate()
+    private void OnValidate()
     {
-        if (useParent)
+        /*if (useParent)
         {
             terrainfrequenzy = gameObject.transform.parent.GetComponent<ChunkManagement>().frequenzy;
             chunkresolution = gameObject.transform.parent.GetComponent<ChunkManagement>().resolution;
             amplitude = gameObject.transform.parent.GetComponent<ChunkManagement>().amplitude;
             octaves = gameObject.transform.parent.GetComponent<ChunkManagement>().octaves;
 
-        }
+        }*/
+
         int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
 
 
@@ -149,32 +150,40 @@ public class NoiseTerrain : MonoBehaviour
 
 
 
-
+        float tempthreshhold = threshhold;
         //filling the 3d array with the noisevalues
-        for (int x = 0; x < chunkresolution ; x++)             //by adding the minus the borders are rendered
+        for (int x = 1; x < chunkresolution ; x++)             //by adding the minus the borders are rendered
         {
-            for (int y = 0; y < chunkresolution-1 * maxheight; y++)
+            for (int y = 1; y < chunkresolution; y++)
             {
 
 
-                for (int z = 0; z < chunkresolution ; z++)
+                for (int z = 1; z < chunkresolution; z++)
                 {
+                 /*   if (y <= 10) { tempthreshhold = 0.33f * threshhold; }
+                    else if (y <= 30) { tempthreshhold = 0.44f * threshhold; }
+                    else if (y <= 66) { tempthreshhold = 0.74f * threshhold; }
+                    else if (y <= 85) { tempthreshhold = 0.45f * threshhold; }
+                    else if (y <= 100) { tempthreshhold = 0.33f * threshhold; }
                     
-                    float height = 0;
-                    height += terrain(new Vector3(x,0,z)/(chunkresolution-1) + gameObject.transform.position);
-                    //Debug.Log(height);
-                    
+    */
 
-                    if (y <= (int)height)
+                    if ((noise.Evaluate(new Vector3(x, y, z) * frequenzy) + 1) / 2 > tempthreshhold)
                     {
                         noisevalues[x, y, z] = 1;
+                    }
+
+
+                    else
+                    {
+                        noisevalues[x, y, z] = 0;
                     }
 
 
                 }
             }
 
-            
+
         }
 
 
@@ -182,7 +191,7 @@ public class NoiseTerrain : MonoBehaviour
 
         for (z = 0; z < chunkresolution - 1; z++)
         {
-            for (y = 0; y < chunkresolution - 1 * maxheight; y++)
+            for (y = 0; y < chunkresolution - 1; y++)
             {
                 for (x = 0; x < chunkresolution - 1; x++)
                 {
@@ -205,22 +214,14 @@ public class NoiseTerrain : MonoBehaviour
         mesh.vertices = verticesarray;
         mesh.triangles = trianglesarray;
         mesh.RecalculateNormals();
+
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         gameObject.transform.localScale = new Vector3(chunksize, chunksize, chunksize);
+        gameObject.GetComponent<MeshRenderer>().material = mat;
 
 
 
 
-    }
-
-
-    private void Update()
-    {
-        if (haschanged)
-        {
-            generate();
-            haschanged = false;
-        }
     }
 
 
