@@ -29,13 +29,15 @@ public class NoiseTerrain : MonoBehaviour
 
     private float density(Vector3 point1)
     {
-        point1 /= (chunkresolution - 1);
-        return (noise.Evaluate(point1 * frequenzy + gameObject.transform.position/(chunksize)) + 1) / 2;
+        return (noise.Evaluate((point1 * frequenzy) / (chunkresolution - 1) + gameObject.transform.position) + 1) / 2;
     }
+
 
     private void triangulate(int[,,] noisevalues)
     {
+
         string binary = "";
+
         binary += noisevalues[x + 1, y, z + 1].ToString();
         binary += noisevalues[x, y, z + 1].ToString(); ;
         binary += noisevalues[x, y, z].ToString();
@@ -54,6 +56,7 @@ public class NoiseTerrain : MonoBehaviour
             int index = tri.triTable[System.Convert.ToInt32(binary, 2), i];
             if (index != -1)
             {
+
                 Vector3 point1 = (tri.edgetable[index, 0] + new Vector3(x, y, z)); 
                 Vector3 point2 = (tri.edgetable[index, 1] + new Vector3(x,y,z));
 
@@ -67,19 +70,28 @@ public class NoiseTerrain : MonoBehaviour
                 verticeslist.Add(newp / (chunkresolution-1));
                 verticescount++;
 
+               /* GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphere.transform.position = newp / (chunkresolution - 1) + gameObject.transform.position;
+                sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);*/
+
 
             }
 
         }
+
+
         for (int i = 0; i < verticescount; i++)
         {
             triangleslist.Add(verticeslist.Count - verticescount + i);
         }
-
     }
 
-    private void Update()
+
+
+
+    private void OnValidate()
     {
+
         int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
         triangleslist.Clear();
         verticeslist.Clear();
@@ -89,15 +101,21 @@ public class NoiseTerrain : MonoBehaviour
         //filling the 3d array with the noisevalues
         for (int x = 0; x < chunkresolution ; x++)             //by adding the minus the borders are rendered
         {
+
             for (int y = 0; y < chunkresolution; y++)
             {
 
                 for (int z = 0; z < chunkresolution; z++)
                 {
                     float noisevalue = density(new Vector3(x, y, z));
+                    
                     if ( noisevalue > threshhold)
                     {
+
+
                         noisevalues[x, y, z] = 1;
+
+                        
 
                         
                     }
@@ -127,6 +145,7 @@ public class NoiseTerrain : MonoBehaviour
                 }
             }
         }
+
 
         Mesh mesh = new Mesh();
         mesh.Clear();
