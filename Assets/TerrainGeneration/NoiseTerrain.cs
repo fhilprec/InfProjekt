@@ -5,7 +5,7 @@ using UnityEngine;
 public class NoiseTerrain : MonoBehaviour
 {
     [Range(1, 100)]
-    public int chunkresolution = 6;
+    public int chunkresolution = 11;
     public int chunksize = 1;
     Noise noise = new Noise();
     [Range(0, 1)]
@@ -29,9 +29,11 @@ public class NoiseTerrain : MonoBehaviour
 
     private float density(Vector3 point1)
     {
-        return (noise.Evaluate((point1 * frequenzy) / (chunkresolution - 1) + gameObject.transform.position) + 1) / 2;
+        //return 0.5f*(noise.Evaluate(point1 * frequenzy + gameObject.transform.position)+1);
+        return (noise.Evaluate((point1 * frequenzy) / (chunkresolution - 1) + gameObject.transform.position/(chunksize)) + 1) / 2;
     }
 
+     
 
     private void triangulate(int[,,] noisevalues)
     {
@@ -89,7 +91,7 @@ public class NoiseTerrain : MonoBehaviour
 
 
 
-    private void OnValidate()
+    private void Update()
     {
 
         int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
@@ -115,6 +117,9 @@ public class NoiseTerrain : MonoBehaviour
 
                         noisevalues[x, y, z] = 1;
 
+                       /* GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        sphere.transform.position = new Vector3(x, y, z) / (chunkresolution - 1) + gameObject.transform.position;
+                        sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);*/
                         
 
                         

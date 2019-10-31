@@ -264,6 +264,7 @@ public class TriAngulationTable
 
 
 
+
     public Vector3[,] edgetable = { 
         
         { new Vector3(0,1,0),new Vector3(1,1,0)}, //c
