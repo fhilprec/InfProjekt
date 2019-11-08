@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class NoiseTerrain : MonoBehaviour
 {
-    [Range(1, 100)]
+    [Range(1, 30)]
     public int chunkresolution = 11;
     public int chunksize = 1;
     Noise noise = new Noise();
@@ -21,6 +21,7 @@ public class NoiseTerrain : MonoBehaviour
     List<int> triangleslist = new List<int>();              //same here
     public float accuracy;
 
+
     int x = 0;
     int y = 0;
     int z = 0;
@@ -29,11 +30,10 @@ public class NoiseTerrain : MonoBehaviour
 
     private float density(Vector3 point1)
     {
-        //return 0.5f*(noise.Evaluate(point1 * frequenzy + gameObject.transform.position)+1);
-        return (noise.Evaluate((point1 * frequenzy) / (chunkresolution - 1) + gameObject.transform.position/(chunksize)) + 1) / 2;
+        return (noise.Evaluate(point1 / (chunkresolution - 1) * frequenzy + gameObject.transform.position/chunksize) + 1 )/2;
     }
 
-     
+
 
     private void triangulate(int[,,] noisevalues)
     {
@@ -48,6 +48,7 @@ public class NoiseTerrain : MonoBehaviour
         binary += noisevalues[x, y + 1, z + 1].ToString();
         binary += noisevalues[x, y + 1, z].ToString();
         binary += noisevalues[x + 1, y + 1, z].ToString();
+
 
 
         int verticescount = 0;
@@ -86,14 +87,15 @@ public class NoiseTerrain : MonoBehaviour
         {
             triangleslist.Add(verticeslist.Count - verticescount + i);
         }
+
+
+
+       
     }
-
-
 
 
     private void Update()
     {
-
         int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
         triangleslist.Clear();
         verticeslist.Clear();
@@ -117,11 +119,13 @@ public class NoiseTerrain : MonoBehaviour
 
                         noisevalues[x, y, z] = 1;
 
-                       /* GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        /*GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         sphere.transform.position = new Vector3(x, y, z) / (chunkresolution - 1) + gameObject.transform.position;
-                        sphere.transform.localScale = new Vector3(0.01f, 0.01f, 0.01f);*/
-                        
-
+                        sphere.transform.localScale = new Vector3(0.02f, 0.02f, 0.02f);
+                        sphere.transform.SetParent(gameObject.transform);
+                        sphere.GetComponent<MeshRenderer>().material = debugc;*/
+             
+                     
                         
                     }
                     else
@@ -154,6 +158,7 @@ public class NoiseTerrain : MonoBehaviour
 
         Mesh mesh = new Mesh();
         mesh.Clear();
+        //if mesh gets to 
         mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
         Vector3[] verticesarray = new Vector3[verticeslist.Count];
         int[] trianglesarray = new int[triangleslist.Count];
@@ -167,6 +172,7 @@ public class NoiseTerrain : MonoBehaviour
         mesh.triangles = trianglesarray;
         mesh.RecalculateNormals();
 
+        
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         gameObject.transform.localScale = new Vector3(chunksize, chunksize, chunksize);
         gameObject.GetComponent<MeshRenderer>().material = mat;
