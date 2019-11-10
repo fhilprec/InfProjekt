@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class NoiseTerrain : MonoBehaviour
 {
-    [Range(1, 30)]
-    public int chunkresolution = 11;
+    [Range(1, 70)]
+    public int chunkresolution = 30;
     public int chunksize = 1;
     Noise noise = new Noise();
     [Range(0, 1)]
@@ -15,22 +15,37 @@ public class NoiseTerrain : MonoBehaviour
     [Range(0.01f, 10f)]
     public float frequenzy = 2f;
     public float amplitude = 1f;
+    public int layers;
     int[,,] noisevalues;
     public Material mat;
     List<Vector3> verticeslist = new List<Vector3>();               //only for debugging make class list after finising
     List<int> triangleslist = new List<int>();              //same here
-    public float accuracy;
+    public float lacunarity = 2.01f;
+    public float persistence = 0.5f;
+
 
 
     int x = 0;
     int y = 0;
     int z = 0;
-
+    
 
 
     private float density(Vector3 point1)
     {
-        return (noise.Evaluate(point1 / (chunkresolution - 1) * frequenzy + gameObject.transform.position/chunksize) + 1 )/2;
+        float v = 0;
+        float tempfrequenzy = frequenzy;
+        float tempamplitude = amplitude;
+        for (int i = 0; i < layers; i++)
+        {
+
+            v += (noise.Evaluate(tempfrequenzy * (point1 / (chunkresolution - 1) + gameObject.transform.position / chunksize)) + 1) / 2 * tempamplitude;
+            tempfrequenzy *= lacunarity;
+            tempamplitude *= persistence;
+        }
+
+
+        return v;
     }
 
 
@@ -94,7 +109,7 @@ public class NoiseTerrain : MonoBehaviour
     }
 
 
-    private void Update()
+    private void OnValidate()
     {
         int[,,] noisevalues = new int[chunkresolution, chunkresolution, chunkresolution];
         triangleslist.Clear();
@@ -175,7 +190,16 @@ public class NoiseTerrain : MonoBehaviour
         
         gameObject.GetComponent<MeshFilter>().mesh = mesh;
         gameObject.transform.localScale = new Vector3(chunksize, chunksize, chunksize);
-        gameObject.GetComponent<MeshRenderer>().material = mat;
+
+        //get the material of the parent component
+        if (gameObject.transform.parent != null)
+        {
+            gameObject.GetComponent<MeshRenderer>().material = gameObject.transform.parent.GetComponent<MeshRenderer>().material;
+        }
+        else
+        {
+            gameObject.GetComponent<MeshRenderer>().material = mat;
+        }
 
 
 
